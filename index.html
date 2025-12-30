@@ -49,6 +49,11 @@ button:hover {
     border-radius: 4px;
     font-weight: bold;
 }
+select {
+    padding: 8px;
+    margin: 10px 0;
+    font-size: 14px;
+}
 table {
     width: 100%;
     border-collapse: collapse;
@@ -84,10 +89,20 @@ SKU | I-Number | Qty
     <span id="resultQty">Generated Result Qty: 0</span>
 </div>
 
+<!-- ✅ UOM TYPE FILTER -->
+<label><b>Select UOM Type:</b></label><br>
+<select id="uomType" onchange="updateUOMType()">
+    <option value="">-- Select --</option>
+    <option value="Piece">Piece</option>
+    <option value="Case">Case</option>
+    <option value="Box">Box</option>
+    <option value="Pallet">Pallet</option>
+</select>
+<br>
+
 <button onclick="generatePreview()">Generate Preview</button>
 <button onclick="copyReport()">Copy Report</button>
 <button onclick="downloadExcel()">Download Excel</button>
-<button 
 <button onclick="clearAll()">Clear All Data</button>
 
 <div id="output"></div>
@@ -97,6 +112,7 @@ SKU | I-Number | Qty
 <script>
 const STORAGE_KEY = "sku_data_storage";
 let finalRows = [];
+let selectedUOM = "";
 
 window.onload = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -109,6 +125,11 @@ window.onload = () => {
 document.getElementById("inputData").addEventListener("input", () => {
     localStorage.setItem(STORAGE_KEY, document.getElementById("inputData").value);
 });
+
+function updateUOMType() {
+    selectedUOM = document.getElementById("uomType").value;
+    renderTable();
+}
 
 function generatePreview() {
     const text = document.getElementById("inputData").value.trim();
@@ -134,6 +155,7 @@ function generatePreview() {
         iNumbers.forEach(iNum => {
             finalRows.push({
                 stockCode: sku,
+                uomType: selectedUOM,
                 quantity: 1,
                 batchCode: iNum
             });
@@ -167,7 +189,7 @@ function renderTable() {
         html += `<tr>
             <td>${r.stockCode}</td>
             <td></td>
-            <td></td>
+            <td>${selectedUOM}</td>
             <td>1</td>
             <td>${r.batchCode}</td>
             <td></td>
@@ -188,7 +210,7 @@ function downloadExcel() {
     let csv = "stockCode,caseNumber,uomType,quantity,batchCode,expiry,serial,orderReferenceNumber,hsCode,countryOfOrigin\n";
 
     finalRows.forEach(r => {
-        csv += `${r.stockCode},,,1,${r.batchCode},,,,,\n`;
+        csv += `${r.stockCode},,${selectedUOM},1,${r.batchCode},,,,,\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv" });
@@ -205,15 +227,11 @@ function copyReport() {
     let text = "stockCode\tcaseNumber\tuomType\tquantity\tbatchCode\texpiry\tserial\torderReferenceNumber\thsCode\tcountryOfOrigin\n";
 
     finalRows.forEach(r => {
-        text += `${r.stockCode}\t\t\t1\t${r.batchCode}\t\t\t\t\t\n`;
+        text += `${r.stockCode}\t\t${selectedUOM}\t1\t${r.batchCode}\t\t\t\t\t\n`;
     });
 
     navigator.clipboard.writeText(text);
     alert("Report copied successfully!");
-}
-
-function refreshPage() {
-    location.reload();
 }
 
 function clearAll() {
@@ -222,6 +240,8 @@ function clearAll() {
     document.getElementById("output").innerHTML = "";
     document.getElementById("pasteQty").innerText = "Total Pasted Qty: 0";
     document.getElementById("resultQty").innerText = "Generated Result Qty: 0";
+    document.getElementById("uomType").value = "";
+    selectedUOM = "";
     finalRows = [];
 }
 </script>
