@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User M.i Creater</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+}
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 3px 20px;
+    text-align: right;
+    font-size: 15px;
+    font-weight: normal;
+}
+.container {
+    padding: 20px;
+}
+textarea {
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    font-size: 14px;
+}
+button {
+    padding: 10px 15px;
+    margin: 10px 5px 10px 0;
+    cursor: pointer;
+    border: none;
+    background: #3498db;
+    color: white;
+    border-radius: 4px;
+}
+button:hover {
+    background: #2980b9;
+}
+.stats {
+    margin-top: 10px;
+}
+.stats span {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #ecf0f1;
+    margin-right: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    font-size: 13px;
+}
+th {
+    background: #ecf0f1;
+}
+</style>
+</head>
+
+<body>
+
+<header>User Oshani CS Team</header>
+
+<div class="container">
+
+<h3>Paste Data Here</h3>
+
+<textarea id="inputData" placeholder="Paste data in this format:
+
+SKU | I-Number | Qty
+"></textarea>
+
+<div class="stats">
+    <span id="pasteQty">Total Pasted Qty: 0</span>
+    <span id="resultQty">Generated Result Qty: 0</span>
+</div>
+
+<button onclick="generatePreview()">Generate Preview</button>
+<button onclick="copyReport()">Copy Report</button>
+<button onclick="downloadExcel()">Download Excel</button>
+<button 
+<button onclick="clearAll()">Clear All Data</button>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+const STORAGE_KEY = "sku_data_storage";
+let finalRows = [];
+
+window.onload = () => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        document.getElementById("inputData").value = saved;
+        generatePreview();
+    }
+};
+
+document.getElementById("inputData").addEventListener("input", () => {
+    localStorage.setItem(STORAGE_KEY, document.getElementById("inputData").value);
+});
+
+function generatePreview() {
+    const text = document.getElementById("inputData").value.trim();
+    if (!text) return;
+
+    const lines = text.split("\n").slice(1);
+    finalRows = [];
+
+    let pastedQty = 0;
+
+    lines.forEach(line => {
+        if (!line.trim()) return;
+
+        const parts = line.split(/\t| {2,}/);
+        const sku = parts[0]?.trim();
+        const iNumbers = parts[1]?.split(",").map(i => i.trim());
+        const qty = parseInt(parts[2]);
+
+        if (!sku || !iNumbers || isNaN(qty)) return;
+
+        pastedQty += qty;
+
+        iNumbers.forEach(iNum => {
+            finalRows.push({
+                stockCode: sku,
+                quantity: 1,
+                batchCode: iNum
+            });
+        });
+    });
+
+    document.getElementById("pasteQty").innerText =
+        "Total Pasted Qty: " + pastedQty;
+    document.getElementById("resultQty").innerText =
+        "Generated Result Qty: " + finalRows.length;
+
+    renderTable();
+}
+
+function renderTable() {
+    let html = `<table>
+        <tr>
+            <th>stockCode</th>
+            <th>caseNumber</th>
+            <th>uomType</th>
+            <th>quantity</th>
+            <th>batchCode</th>
+            <th>expiry</th>
+            <th>serial</th>
+            <th>orderReferenceNumber</th>
+            <th>hsCode</th>
+            <th>countryOfOrigin</th>
+        </tr>`;
+
+    finalRows.forEach(r => {
+        html += `<tr>
+            <td>${r.stockCode}</td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>${r.batchCode}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>`;
+    });
+
+    html += `</table>`;
+    document.getElementById("output").innerHTML = html;
+}
+
+function downloadExcel() {
+    if (!finalRows.length) return;
+
+    let csv = "stockCode,caseNumber,uomType,quantity,batchCode,expiry,serial,orderReferenceNumber,hsCode,countryOfOrigin\n";
+
+    finalRows.forEach(r => {
+        csv += `${r.stockCode},,,1,${r.batchCode},,,,,\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "SKU_I_Number_Report.csv";
+    a.click();
+}
+
+function copyReport() {
+    if (!finalRows.length) return;
+
+    let text = "stockCode\tcaseNumber\tuomType\tquantity\tbatchCode\texpiry\tserial\torderReferenceNumber\thsCode\tcountryOfOrigin\n";
+
+    finalRows.forEach(r => {
+        text += `${r.stockCode}\t\t\t1\t${r.batchCode}\t\t\t\t\t\n`;
+    });
+
+    navigator.clipboard.writeText(text);
+    alert("Report copied successfully!");
+}
+
+function refreshPage() {
+    location.reload();
+}
+
+function clearAll() {
+    localStorage.removeItem(STORAGE_KEY);
+    document.getElementById("inputData").value = "";
+    document.getElementById("output").innerHTML = "";
+    document.getElementById("pasteQty").innerText = "Total Pasted Qty: 0";
+    document.getElementById("resultQty").innerText = "Generated Result Qty: 0";
+    finalRows = [];
+}
+</script>
+
+</body>
+</html>
