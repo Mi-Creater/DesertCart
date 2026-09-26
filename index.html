@@ -119,6 +119,8 @@ window.onload = () => {
     if (saved) {
         document.getElementById("inputData").value = saved;
     }
+
+    showFormatHeader();
 };
 
 document.getElementById("inputData").addEventListener("input", () => {
@@ -127,10 +129,29 @@ document.getElementById("inputData").addEventListener("input", () => {
 
 function updateUOMType() {
     selectedUOM = document.getElementById("uomType").value;
-    document.getElementById("output").innerHTML = "";
     finalRows = [];
     document.getElementById("resultQty").innerText =
         "Generated Result Qty: 0";
+    showFormatHeader();
+}
+
+function showFormatHeader() {
+    document.getElementById("output").innerHTML = `
+        <table>
+            <tr>
+                <th>stockCode</th>
+                <th>caseNumber</th>
+                <th>uomType</th>
+                <th>quantity</th>
+                <th>batchCode</th>
+                <th>expiry</th>
+                <th>serial</th>
+                <th>orderReferenceNumber</th>
+                <th>hsCode</th>
+                <th>countryOfOrigin</th>
+            </tr>
+        </table>
+    `;
 }
 
 function generatePreview() {
@@ -140,6 +161,21 @@ function generatePreview() {
         "Generated Result Qty: 0";
 
     document.getElementById("output").innerHTML = `
+        <table>
+            <tr>
+                <th>stockCode</th>
+                <th>caseNumber</th>
+                <th>uomType</th>
+                <th>quantity</th>
+                <th>batchCode</th>
+                <th>expiry</th>
+                <th>serial</th>
+                <th>orderReferenceNumber</th>
+                <th>hsCode</th>
+                <th>countryOfOrigin</th>
+            </tr>
+        </table>
+
         <div style="
             margin-top:20px;
             padding:30px;
@@ -163,7 +199,7 @@ function generatePreview() {
 }
 
 function renderTable() {
-    document.getElementById("output").innerHTML = "";
+    showFormatHeader();
     finalRows = [];
 }
 
@@ -178,12 +214,12 @@ function copyReport() {
 function clearAll() {
     localStorage.removeItem(STORAGE_KEY);
     document.getElementById("inputData").value = "";
-    document.getElementById("output").innerHTML = "";
     document.getElementById("pasteQty").innerText = "Total Pasted Qty: 0";
     document.getElementById("resultQty").innerText = "Generated Result Qty: 0";
     document.getElementById("uomType").value = "";
     selectedUOM = "";
     finalRows = [];
+    showFormatHeader();
 }
 </script>
 
