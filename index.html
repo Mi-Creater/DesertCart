@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -124,14 +125,19 @@ window.onload = () => {
 };
 
 document.getElementById("inputData").addEventListener("input", () => {
-    localStorage.setItem(STORAGE_KEY, document.getElementById("inputData").value);
+    localStorage.setItem(
+        STORAGE_KEY,
+        document.getElementById("inputData").value
+    );
 });
 
 function updateUOMType() {
     selectedUOM = document.getElementById("uomType").value;
     finalRows = [];
+
     document.getElementById("resultQty").innerText =
         "Generated Result Qty: 0";
+
     showFormatHeader();
 }
 
@@ -213,15 +219,72 @@ function copyReport() {
 
 function clearAll() {
     localStorage.removeItem(STORAGE_KEY);
+
     document.getElementById("inputData").value = "";
-    document.getElementById("pasteQty").innerText = "Total Pasted Qty: 0";
-    document.getElementById("resultQty").innerText = "Generated Result Qty: 0";
+
+    document.getElementById("pasteQty").innerText =
+        "Total Pasted Qty: 0";
+
+    document.getElementById("resultQty").innerText =
+        "Generated Result Qty: 0";
+
     document.getElementById("uomType").value = "";
+
     selectedUOM = "";
     finalRows = [];
+
     showFormatHeader();
 }
 </script>
 
+
+<!-- 🔒 BASIC SOURCE PROTECTION -->
+<script>
+document.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+});
+
+document.addEventListener("keydown", function(event) {
+
+    // Ctrl + U
+    if (event.ctrlKey && event.key.toLowerCase() === "u") {
+        event.preventDefault();
+    }
+
+    // F12
+    if (event.key === "F12") {
+        event.preventDefault();
+    }
+
+    // Ctrl + Shift + I
+    if (
+        event.ctrlKey &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "i"
+    ) {
+        event.preventDefault();
+    }
+
+    // Ctrl + Shift + J
+    if (
+        event.ctrlKey &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "j"
+    ) {
+        event.preventDefault();
+    }
+
+    // Ctrl + Shift + C
+    if (
+        event.ctrlKey &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "c"
+    ) {
+        event.preventDefault();
+    }
+});
+</script>
+
 </body>
 </html>
+```
