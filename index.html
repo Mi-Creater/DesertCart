@@ -118,7 +118,6 @@ window.onload = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         document.getElementById("inputData").value = saved;
-        generatePreview();
     }
 };
 
@@ -128,110 +127,52 @@ document.getElementById("inputData").addEventListener("input", () => {
 
 function updateUOMType() {
     selectedUOM = document.getElementById("uomType").value;
-    renderTable();
+    document.getElementById("output").innerHTML = "";
+    finalRows = [];
+    document.getElementById("resultQty").innerText =
+        "Generated Result Qty: 0";
 }
 
 function generatePreview() {
-    const text = document.getElementById("inputData").value.trim();
-    if (!text) return;
-
-    const lines = text.split("\n").slice(1);
     finalRows = [];
 
-    let pastedQty = 0;
-
-    lines.forEach(line => {
-        if (!line.trim()) return;
-
-        const parts = line.split(/\t| {2,}/);
-        const sku = parts[0]?.trim();
-        const iNumbers = parts[1]?.split(",").map(i => i.trim());
-        const qty = parseInt(parts[2]);
-
-        if (!sku || !iNumbers || isNaN(qty)) return;
-
-        pastedQty += qty;
-
-        iNumbers.forEach(iNum => {
-            finalRows.push({
-                stockCode: sku,
-                uomType: selectedUOM,
-                quantity: 1,
-                batchCode: iNum
-            });
-        });
-    });
-
-    document.getElementById("pasteQty").innerText =
-        "Total Pasted Qty: " + pastedQty;
     document.getElementById("resultQty").innerText =
-        "Generated Result Qty: " + finalRows.length;
+        "Generated Result Qty: 0";
 
-    renderTable();
+    document.getElementById("output").innerHTML = `
+        <div style="
+            margin-top:20px;
+            padding:30px;
+            background:#fff;
+            border:3px solid #c0392b;
+            border-radius:6px;
+            text-align:center;
+            font-size:20px;
+            font-weight:bold;
+            color:#c0392b;
+        ">
+            ⚠️ FORMAT NOT VALID ⚠️
+            <br><br>
+            Your pasted data format is not valid.
+            <br>
+            Please check the format and paste the correct data.
+            <br><br>
+            No report has been generated.
+        </div>
+    `;
 }
 
 function renderTable() {
-    let html = `<table>
-        <tr>
-            <th>stockCode</th>
-            <th>caseNumber</th>
-            <th>uomType</th>
-            <th>quantity</th>
-            <th>batchCode</th>
-            <th>expiry</th>
-            <th>serial</th>
-            <th>orderReferenceNumber</th>
-            <th>hsCode</th>
-            <th>countryOfOrigin</th>
-        </tr>`;
-
-    finalRows.forEach(r => {
-        html += `<tr>
-            <td>${r.stockCode}</td>
-            <td></td>
-            <td>${selectedUOM}</td>
-            <td>1</td>
-            <td>${r.batchCode}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>`;
-    });
-
-    html += `</table>`;
-    document.getElementById("output").innerHTML = html;
+    document.getElementById("output").innerHTML = "";
+    finalRows = [];
 }
 
 function downloadExcel() {
-    if (!finalRows.length) return;
-
-    let csv = "stockCode,caseNumber,uomType,quantity,batchCode,expiry,serial,orderReferenceNumber,hsCode,countryOfOrigin\n";
-
-    finalRows.forEach(r => {
-        csv += `${r.stockCode},,${selectedUOM},1,${r.batchCode},,,,,\n`;
-    });
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "SKU_I_Number_Report.csv";
-    a.click();
+    return;
 }
 
 function copyReport() {
-    if (!finalRows.length) return;
-
-    let text = "stockCode\tcaseNumber\tuomType\tquantity\tbatchCode\texpiry\tserial\torderReferenceNumber\thsCode\tcountryOfOrigin\n";
-
-    finalRows.forEach(r => {
-        text += `${r.stockCode}\t\t${selectedUOM}\t1\t${r.batchCode}\t\t\t\t\t\n`;
-    });
-
-    navigator.clipboard.writeText(text);
-    alert("Report copied successfully!");
+    return;
 }
 
 function clearAll() {
