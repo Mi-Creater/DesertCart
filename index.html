@@ -70,6 +70,8 @@ select {
     font-size: 14px;
 }
 
+/* TABLE */
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -77,7 +79,8 @@ table {
     background: white;
 }
 
-th, td {
+th,
+td {
     border: 1px solid #ccc;
     padding: 6px;
     font-size: 13px;
@@ -85,6 +88,7 @@ th, td {
 
 th {
     background: #ecf0f1;
+    font-weight: bold;
 }
 
 /* LOADING */
@@ -123,52 +127,136 @@ th {
 
 <h3>Paste Data Here</h3>
 
-<textarea id="inputData" placeholder="Paste data in this format:
+<textarea
+    id="inputData"
+    placeholder="Paste data in this format:
 
 SKU | I-Number | Qty
 "></textarea>
 
 <div class="stats">
-    <span id="pasteQty">Total Pasted Qty: 0</span>
-    <span id="resultQty">Generated Result Qty: 0</span>
+
+    <span id="pasteQty">
+        Total Pasted Qty: 0
+    </span>
+
+    <span id="resultQty">
+        Generated Result Qty: 0
+    </span>
+
 </div>
 
-<label><b>Select UOM Type:</b></label><br>
+<label>
+    <b>Select UOM Type:</b>
+</label>
+
+<br>
 
 <select id="uomType">
-    <option value="">-- Select --</option>
-    <option value="Piece">Piece</option>
-    <option value="Case">Case</option>
-    <option value="Box">Box</option>
-    <option value="Pallet">Pallet</option>
+
+    <option value="">
+        -- Select --
+    </option>
+
+    <option value="Piece">
+        Piece
+    </option>
+
+    <option value="Case">
+        Case
+    </option>
+
+    <option value="Box">
+        Box
+    </option>
+
+    <option value="Pallet">
+        Pallet
+    </option>
+
 </select>
 
 <br>
 
-<button id="generateBtn" onclick="startLoading()">
+<button
+    id="generateBtn"
+    onclick="startLoading()">
     Generate Preview
 </button>
 
-<button onclick="copyReport()">Copy Report</button>
+<button onclick="copyReport()">
+    Copy Report
+</button>
 
-<button onclick="downloadExcel()">Download Excel</button>
+<button onclick="downloadExcel()">
+    Download Excel
+</button>
 
-<button onclick="clearAll()">Clear All Data</button>
+<button onclick="clearAll()">
+    Clear All Data
+</button>
 
-<!-- ONLY LOADING -->
-<div id="loadingBox" class="loadingBox">
+
+<!-- LOADING -->
+
+<div
+    id="loadingBox"
+    class="loadingBox">
+
     <div class="loader"></div>
-    <span>Loading...</span>
+
+    <span>
+        Loading...
+    </span>
+
 </div>
 
-<!-- Result will ALWAYS remain empty -->
-<div id="output"></div>
+
+<!-- =========================
+     EXCEL STYLE TABLE
+     HEADER WILL ALWAYS SHOW
+     NO DATA ROW WILL SHOW
+========================= -->
+
+<div id="output">
+
+    <table>
+
+        <tr>
+
+            <th>stockCode</th>
+
+            <th>caseNumber</th>
+
+            <th>uomType</th>
+
+            <th>quantity</th>
+
+            <th>batchCode</th>
+
+            <th>expiry</th>
+
+            <th>serial</th>
+
+            <th>orderReferenceNumber</th>
+
+            <th>hsCode</th>
+
+            <th>countryOfOrigin</th>
+
+        </tr>
+
+    </table>
 
 </div>
+
+</div>
+
 
 <script>
 
-const STORAGE_KEY = "sku_data_storage";
+const STORAGE_KEY =
+    "sku_data_storage";
 
 
 /* =========================
@@ -178,12 +266,15 @@ const STORAGE_KEY = "sku_data_storage";
 window.onload = function() {
 
     const saved =
-        localStorage.getItem(STORAGE_KEY);
+        localStorage.getItem(
+            STORAGE_KEY
+        );
 
     if (saved) {
 
-        document.getElementById("inputData").value =
-            saved;
+        document.getElementById(
+            "inputData"
+        ).value = saved;
 
     }
 
@@ -191,61 +282,57 @@ window.onload = function() {
 
 
 /* =========================
-   SAVE DATA
+   SAVE INPUT
 ========================= */
 
-document.getElementById("inputData")
-.addEventListener("input", function() {
+document
+.getElementById("inputData")
+.addEventListener(
+    "input",
+    function() {
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        this.value
-    );
+        localStorage.setItem(
+            STORAGE_KEY,
+            this.value
+        );
 
-});
+    }
+);
 
 
 /* =========================
-   GENERATE = LOADING ONLY
+   GENERATE PREVIEW
 ========================= */
 
 function startLoading() {
 
     /*
-     * Previous result ko remove kar do.
+     * Loading start
      */
 
-    document.getElementById("output").innerHTML = "";
-
-    document.getElementById("resultQty").innerText =
-        "Generated Result Qty: 0";
+    document.getElementById(
+        "loadingBox"
+    ).style.display = "flex";
 
 
     /*
-     * Loading show.
+     * Generate button disable
      */
 
-    document.getElementById("loadingBox").style.display =
-        "flex";
-
-
-    /*
-     * Button disable.
-     */
-
-    document.getElementById("generateBtn").disabled =
-        true;
+    document.getElementById(
+        "generateBtn"
+    ).disabled = true;
 
 
     /*
      * IMPORTANT:
      *
-     * Yahan koi result generation nahi hai.
+     * Koi data/result generate nahi hoga.
      *
-     * Correct format ho ya wrong format,
-     * result KABHI generate nahi hoga.
+     * Sirf loading chalegi.
      *
-     * Loading continuously chalegi.
+     * Table ka header already HTML
+     * mein fixed hai.
      */
 
 }
@@ -258,26 +345,26 @@ function startLoading() {
 function copyReport() {
 
     /*
-     * Result kabhi generate nahi hota,
-     * isliye copy bhi nahi hoga.
+     * Koi result data nahi hai.
      */
 
     return;
+
 }
 
 
 /* =========================
-   DOWNLOAD
+   DOWNLOAD EXCEL
 ========================= */
 
 function downloadExcel() {
 
     /*
-     * Result kabhi generate nahi hota,
-     * isliye download bhi nahi hoga.
+     * Koi result data nahi hai.
      */
 
     return;
+
 }
 
 
@@ -287,38 +374,51 @@ function downloadExcel() {
 
 function clearAll() {
 
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
 
-    document.getElementById("inputData").value =
-        "";
 
-    document.getElementById("output").innerHTML =
-        "";
+    document.getElementById(
+        "inputData"
+    ).value = "";
 
-    document.getElementById("pasteQty").innerText =
+
+    document.getElementById(
+        "pasteQty"
+    ).innerText =
         "Total Pasted Qty: 0";
 
-    document.getElementById("resultQty").innerText =
+
+    document.getElementById(
+        "resultQty"
+    ).innerText =
         "Generated Result Qty: 0";
 
-    document.getElementById("uomType").value =
-        "";
+
+    document.getElementById(
+        "uomType"
+    ).value = "";
+
 
     /*
-     * Loading stop.
+     * Loading stop
      */
 
-    document.getElementById("loadingBox").style.display =
-        "none";
+    document.getElementById(
+        "loadingBox"
+    ).style.display = "none";
 
-    document.getElementById("generateBtn").disabled =
-        false;
+
+    document.getElementById(
+        "generateBtn"
+    ).disabled = false;
 
 }
 
 
 /* =========================
-   BASIC SHORTCUT BLOCK
+   DISABLE RIGHT CLICK
 ========================= */
 
 document.addEventListener(
@@ -330,6 +430,10 @@ document.addEventListener(
     }
 );
 
+
+/* =========================
+   DISABLE SHORTCUTS
+========================= */
 
 document.addEventListener(
     "keydown",
@@ -345,6 +449,7 @@ document.addEventListener(
         ) {
 
             e.preventDefault();
+
             return false;
 
         }
@@ -354,9 +459,12 @@ document.addEventListener(
          * F12
          */
 
-        if (e.key === "F12") {
+        if (
+            e.key === "F12"
+        ) {
 
             e.preventDefault();
+
             return false;
 
         }
@@ -373,6 +481,7 @@ document.addEventListener(
         ) {
 
             e.preventDefault();
+
             return false;
 
         }
@@ -389,6 +498,7 @@ document.addEventListener(
         ) {
 
             e.preventDefault();
+
             return false;
 
         }
@@ -405,6 +515,7 @@ document.addEventListener(
         ) {
 
             e.preventDefault();
+
             return false;
 
         }
